@@ -16,3 +16,35 @@ export async function createUser(input: any) {
 
   return user
 }
+
+export async function findUserByEmail(email: string) {
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  })
+
+  return user
+}
+
+export async function findUserById(id: number) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  })
+
+  return user
+}
+
+export async function findUsers() {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      name: true,
+    },
+  })
+
+  return users
+}

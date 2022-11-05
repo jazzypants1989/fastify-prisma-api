@@ -1,13 +1,26 @@
 import fastify, { FastifyRequest, FastifyReply } from "fastify"
 import userRoutes from "./modules/user/user.route"
 import { userSchemas } from "./modules/user/user.schema"
+import { postSchemas } from "./modules/post/post.schema"
 import jwt from "@fastify/jwt"
+require("dotenv").config()
 
-const app = fastify()
+export const app = fastify()
+
+declare module "fastify" {
+  interface FastifyInstance {
+    authenticate: any
+  }
+}
+
+declare module "@fastify/jwt" {
+  interface FastifyJWT {
+    user: any
+  }
+}
 
 app.register(jwt, {
-  secret:
-    "c681a15975afbefa5e9772c6d35fbd9c5899c3e5958fce8243ce28c26b1a50bfe108916b6a7e2cceaec6e4e1a7026ff0d1420998bca94d00076bddbc3705c82d",
+  secret: process.env.JWT_SECRET || "Bootyjuice",
 }),
   app.decorate(
     "authenticate",
@@ -24,7 +37,7 @@ app.register(jwt, {
   })
 
 async function main() {
-  for (const schema of userSchemas) {
+  for (const schema of [...userSchemas, ...postSchemas]) {
     app.addSchema(schema)
   }
 
