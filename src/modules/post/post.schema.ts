@@ -1,13 +1,9 @@
 import { z } from "zod"
 import { buildJsonSchemas } from "fastify-zod"
 
-const postInput = {
+const createPostSchema = z.object({
   title: z.string(),
   content: z.string(),
-}
-
-const createPostSchema = z.object({
-  ...postInput,
 })
 
 const postResponseSchema = z.object({

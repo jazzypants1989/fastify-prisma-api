@@ -1,7 +1,6 @@
 import { app } from "./../../app"
 import { FastifyReply, FastifyRequest } from "fastify"
 import { verifyPassword } from "../../utils/hash"
-import prisma from "../../utils/prisma"
 import { CreateUserInput, LoginRequest } from "./user.schema"
 import { createUser, findUserByEmail, findUsers } from "./user.service"
 
