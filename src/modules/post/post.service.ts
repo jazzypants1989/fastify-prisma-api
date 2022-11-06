@@ -27,6 +27,8 @@ export async function findPosts() {
       title: true,
       content: true,
       authorId: true,
+      createdAt: true,
+      updatedAt: true,
     },
   })
 
@@ -43,9 +45,10 @@ export async function findPostsByAuthorId(authorId: number) {
       title: true,
       content: true,
       authorId: true,
+      createdAt: true,
+      updatedAt: true,
     },
   })
-
   return posts
 }
 

@@ -1,8 +1,12 @@
 import fastify, { FastifyRequest, FastifyReply } from "fastify"
-import userRoutes from "./modules/user/user.route"
-import { userSchemas } from "./modules/user/user.schema"
+import swagger from "@fastify/swagger"
+import { $ref, userSchemas } from "./modules/user/user.schema"
 import { postSchemas } from "./modules/post/post.schema"
+import userRoutes from "./modules/user/user.route"
 import jwt from "@fastify/jwt"
+import postRoutes from "./modules/post/post.route"
+import { buildJsonSchemas, register, withRefResolver } from "fastify-zod"
+import { version } from "../package.json"
 require("dotenv").config()
 
 export const app = fastify()
@@ -31,10 +35,7 @@ app.register(jwt, {
         reply.send(err)
       }
     }
-  ),
-  app.get("/doesthisthingwork", async () => {
-    return { status: "Yeah, duh, you're awesome." }
-  })
+  )
 
 async function main() {
   for (const schema of [...userSchemas, ...postSchemas]) {
@@ -42,6 +43,7 @@ async function main() {
   }
 
   app.register(userRoutes, { prefix: "api/users" })
+  app.register(postRoutes, { prefix: "api/posts" })
   try {
     await app.listen({ port: 1337, host: "0.0.0.0" }, function (err, address) {
       if (err) {
@@ -56,6 +58,28 @@ async function main() {
     app.log.error(err)
     process.exit(1)
   }
+
+  app.register(
+    swagger,
+    withRefResolver({
+      routePrefix: "/documentation",
+      exposeRoute: true,
+      staticCSP: true,
+      openapi: {
+        info: {
+          title: "Fastify API",
+          description: "Building a blazing fast REST API with Fastify",
+          version,
+        },
+      },
+    })
+  )
+
+  app.ready((err) => {
+    if (err) throw err
+    app.swagger()
+    console.log(app.printRoutes())
+  })
 }
 
 main()
